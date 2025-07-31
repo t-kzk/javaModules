@@ -1,0 +1,3 @@
+rootProject.name = 'javaModules'
+include 'module-2-jdbc'
+

@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+}
+
+group = 'kzk.test'
+version = '1.0-SNAPSHOT'
+
+allprojects {
+    apply plugin: 'java'
+
+    repositories {
+        mavenCentral()
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
+}
+
+subprojects {
+    ext {
+        junitVersion = '5.13.1'
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+    }
+
+    tasks.withType(Test).configureEach {
+        options {
+            systemProperties(System.getProperties())
+        }
+        testLogging {
+            showStandardStreams = true
+            exceptionFormat = 'full'
+        }
+        useJUnitPlatform()
+    }
+}

@@ -1,0 +1,1 @@
+url: jdbc:mysql://localhost:3306/rangiffler_auth?serverTimezone=UTC&createDatabaseIfNotExist=true

@@ -1,0 +1,19 @@
+services:
+  mySql-db:
+    image: mysql:8.0.43
+    container_name: mySql-db
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 3s
+      retries: 5
+      interval: 3s
+    volumes:
+      - mysql_data:/var/lib/mysql
+    dns_search: .
+
+volumes:  # ← Добавляем объявление тома
+  mysql_data:
