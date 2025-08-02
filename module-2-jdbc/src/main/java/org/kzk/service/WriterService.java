@@ -5,20 +5,63 @@ import org.kzk.repository.WriterRepository;
 import org.kzk.repository.impl.WriterRepositoryJdbcImpl;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class WriterService {
     WriterRepository writerRepository = new WriterRepositoryJdbcImpl();
 
-    public Integer createWriter(String firstName, String lastName) {
+    public Writer createWriter(String firstName, String lastName) {
         return writerRepository.save(new Writer(null, firstName, lastName, null));
 
     }
 
-    public List<Writer> showAllWriters() {
-       return writerRepository.findAll();
+    public Writer updateWriter(Integer writerId, String firstName, String lastName) {
+        Optional<Writer> currenOpt = writerRepository.findById(writerId);
+        if (currenOpt.isPresent()) {
+            Writer currentOldWriter = currenOpt.get();
+            String finalFirstName = checkFirstNameForUpdate(currentOldWriter, firstName);
+            String finalLastName = checkLastName(currentOldWriter, lastName);
+            return writerRepository.update(new Writer(writerId, finalFirstName, finalLastName, null));
+        } else {
+            throw new RuntimeException("The user [%d] is not exist".formatted(writerId));
+        }
+
     }
 
-    public void deleteWriter(Integer id) {
-        writerRepository.deleteById(id);
+    public List<Writer> showAllWriters() {
+        return writerRepository.findAll();
+    }
+
+    public boolean deleteWriter(Integer writerId) {
+        Optional<Writer> currenOpt = writerRepository.findById(writerId);
+        if (currenOpt.isPresent()) {
+            Writer writer = currenOpt.get();
+            return writerRepository.delete(writer);
+        } else {
+            throw new RuntimeException("The user [%d] is not exist".formatted(writerId));
+        }
+    }
+
+    private String checkFirstNameForUpdate(Writer currentOldWriter, String firstName) {
+        if (!currentOldWriter.firstName().equals(firstName)) {
+            List<Writer> all = writerRepository.findAll();
+            if (all.stream().anyMatch(w -> w.firstName().equals(firstName))) {
+                System.out.println("К сожалению, это имя уже занято - выберете другое");
+                throw new RuntimeException("К сожалению, это имя уже занято - выберете другое");
+            } else {
+                return firstName;
+            }
+        } else {
+            return currentOldWriter.firstName();
+        }
+    }
+
+    private String checkLastName(Writer currentOldWriter, String lastName) {
+        if (Objects.nonNull(lastName)) {
+            return lastName;
+        } else {
+            return currentOldWriter.lastName();
+        }
     }
 }

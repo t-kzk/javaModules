@@ -1,12 +1,16 @@
-
 group = 'org.kzk'
 version = '1.0.0'
 
 
 dependencies {
-    implementation("org.liquibase:liquibase-core:4.33.0")
-    implementation("mysql:mysql-connector-java:8.0.33")
+
+    implementation(
+            "mysql:mysql-connector-java:$mySqlDriver",
+            "org.liquibase:liquibase-core:$liquibaseVersion"
+    )
 
 
-    testImplementation "org.junit.jupiter:junit-jupiter:${junitVersion}"
+    testImplementation(
+            "org.junit.jupiter:junit-jupiter:$jUnitVersion"
+    )
 }

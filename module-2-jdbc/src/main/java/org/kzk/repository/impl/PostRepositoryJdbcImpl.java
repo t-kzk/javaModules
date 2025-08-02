@@ -147,12 +147,10 @@ public class PostRepositoryJdbcImpl implements PostRepository {
 
 
             Integer id = 0;
-
             // Вставка поста
             try (PreparedStatement ps = connection.prepareStatement(
                     SQL_INSERT_POST,
                     Statement.RETURN_GENERATED_KEYS)) {
-              //  ps.setInt(1, id);
                 ps.setString(1, entity.content());
                 ps.setObject(2, entity.created());
                 ps.setString(3, entity.status().name());
@@ -160,12 +158,11 @@ public class PostRepositoryJdbcImpl implements PostRepository {
                 ps.execute();
 
 
-         /*       try (ResultSet resultSet = ps.getGeneratedKeys()){
+                try (ResultSet resultSet = ps.getGeneratedKeys()){
                     if (resultSet.next()) {
                         id= resultSet.getInt(1);
                     }
                 }
-               */
             }
 
 

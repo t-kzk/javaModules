@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS posts (
 CREATE TABLE IF NOT EXISTS post_labels (
                                            post_id  INT NOT NULL,
                                            label_id INT NOT NULL,
-                                           PRIMARY KEY (post_id, label_id),
+                                           UNIQUE (post_id, label_id),
                                            FOREIGN KEY (post_id) REFERENCES posts (id) ON DELETE CASCADE,
                                            FOREIGN KEY (label_id) REFERENCES labels (id) ON DELETE CASCADE
 );

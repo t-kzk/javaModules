@@ -43,8 +43,8 @@ public class WriterMenuView {
         System.out.println("Введите фамилию автора: ");
         String lastname = scanner.nextLine();
 
-        Integer writerUid = writerController.createWriter(firstname, lastname);
-        System.out.println("Автор создан с id = [%d]".formatted(writerUid));
+        Writer writerUid = writerController.createWriter(firstname, lastname);
+        System.out.println("Автор создан = [%s]".formatted(writerUid));
     }
 
     private void showAllWriters() {
