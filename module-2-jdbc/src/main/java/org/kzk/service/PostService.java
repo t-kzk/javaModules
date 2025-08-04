@@ -3,21 +3,20 @@ package org.kzk.service;
 import org.kzk.model.Label;
 import org.kzk.model.Post;
 import org.kzk.model.PostStatus;
-import org.kzk.repository.LabelRepository;
 import org.kzk.repository.PostRepository;
+import org.kzk.repository.impl.PostRepositoryJdbcImpl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class PostService {
     private final PostRepository postRepository;
-    private final LabelRepository labelRepository;
+    private final LabelService labelService;
 
-    public PostService(PostRepository postRepository, LabelRepository labelRepository) {
-        this.postRepository = postRepository;
-        this.labelRepository = labelRepository;
+    public PostService() {
+        this.postRepository = new PostRepositoryJdbcImpl();
+        this.labelService = new LabelService();
     }
 
     public Post createPost(
@@ -25,8 +24,7 @@ public class PostService {
             String content,
             List<Integer> labelIds) {
 
-        // todo заменить на лейбл сервис
-        List<Label> allLabels = labelRepository.findAll().stream().filter(l -> labelIds.contains(l.id())).toList();
+        List<Label> allLabels = labelService.findAllLabels().stream().filter(l -> labelIds.contains(l.id())).toList();
 
         LocalDateTime created = LocalDateTime.now();
         PostStatus postStatus;
@@ -40,7 +38,7 @@ public class PostService {
                 content,
                 created,
                 null,
-                allLabels, //todo add label
+                allLabels,
                 postStatus,
                 writerId
         ));
@@ -107,8 +105,23 @@ public class PostService {
         ));
     }
 
-    private boolean isContentValid(String content) {
+/*    private boolean isContentValid(String content) {
         return !(content.isBlank() || content.contains("*"));
+    }*/
+
+    private boolean isContentValid(String content) {
+        // Проверка на null или пустую строку
+        if (content == null || content.isEmpty()) {
+            return false;
+        }
+
+        // Проверка на наличие хотя бы одного символа '*'
+        if (content.contains("*")) {
+            return false;
+        }
+
+        // Если все проверки пройдены
+        return true;
     }
 
     public Post checkExistingPost(Integer idPost) {

@@ -4,6 +4,7 @@ import org.kzk.helper.JdbcHelper;
 import org.kzk.model.Label;
 import org.kzk.model.Post;
 import org.kzk.model.PostStatus;
+import org.kzk.repository.LabelRepository;
 import org.kzk.repository.PostRepository;
 
 import java.sql.PreparedStatement;
@@ -18,6 +19,8 @@ import static org.kzk.helper.JdbcHelper.getPreparedStatement;
 import static org.kzk.helper.JdbcHelper.getPreparedStatementWithKeys;
 
 public class PostRepositoryJdbcImpl implements PostRepository {
+
+    LabelRepository labelRepository = new LabelRepositoryJdbcImpl();
 
     private static final String SQL_FIND_ALL_BY_WRITER_ID = """
             SELECT * FROM posts WHERE writer_id = ? AND status != ?;
@@ -48,6 +51,15 @@ public class PostRepositoryJdbcImpl implements PostRepository {
             SELECT * FROM posts;
             """;
 
+    private static final String SQL_ADD_LABEL_TO_POST = """
+            INSERT INTO post_labels (post_id, label_id)
+            VALUES (?, ?);
+            """;
+
+    private static final String SQL_SELECT_LABEL_IDS_BY_POST = """
+            SELECT label_id FROM post_labels WHERE post_id = ?;
+            """;
+
     @Override
     public List<Post> findAllByWriterId(Integer writerId) {
         List<Post> posts = new ArrayList<>();
@@ -57,9 +69,8 @@ public class PostRepositoryJdbcImpl implements PostRepository {
             try (ResultSet resultSet = ps.executeQuery()) {
                 while (resultSet.next()) {
                     int postId = resultSet.getInt("id");
-                    // Optional<Label> byId = labelRepository.findById(postId);
-                    // todo will add label
-                    posts.add(Post.rsToPost(resultSet, new ArrayList<>()));
+                    List<Label> labels = getLabels(postId);
+                    posts.add(Post.rsToPost(resultSet, labels));
                 }
             }
             return posts;
@@ -88,8 +99,7 @@ public class PostRepositoryJdbcImpl implements PostRepository {
 
     @Override
     public Post save(Post entity) {
-        try (PreparedStatement psPost = getPreparedStatementWithKeys(SQL_INSERT_POST);
-             PreparedStatement psLabels = getPreparedStatement(SQL_INSERT_POST_LABEL)) {
+        try (PreparedStatement psPost = getPreparedStatementWithKeys(SQL_INSERT_POST)) {
 
             JdbcHelper.beginTransaction();
 
@@ -107,6 +117,18 @@ public class PostRepositoryJdbcImpl implements PostRepository {
             }
 
             List<Label> labels = entity.labels();
+            savePostLabels(postId, labels);
+
+            JdbcHelper.commitTransaction();
+            return findById(postId).get(); // вопрос: будто бы в данном случае так можно и проверка будет избыточна?
+        } catch (SQLException e) {
+            JdbcHelper.rollbackTransaction();
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void savePostLabels(Integer postId, List<Label> labels) {
+        try (PreparedStatement psLabels = getPreparedStatement(SQL_INSERT_POST_LABEL)) {
             if (!labels.isEmpty()) {
                 for (Label label : labels) {
                     psLabels.setInt(1, postId);
@@ -121,11 +143,7 @@ public class PostRepositoryJdbcImpl implements PostRepository {
                             .formatted(labels.size(), countAddedLabels));
                 }
             }
-            JdbcHelper.commitTransaction();
-
-            return findById(postId).get();
         } catch (SQLException e) {
-            JdbcHelper.rollbackTransaction();
             throw new RuntimeException(e);
         }
     }
@@ -147,8 +165,9 @@ public class PostRepositoryJdbcImpl implements PostRepository {
             Post post = null;
             try (ResultSet resultSet = ps.executeQuery()) {
                 if (resultSet.next()) {
-                    // todo add labels
-                    post = Post.rsToPost(resultSet, new ArrayList<>());
+                    int postId = resultSet.getInt("id");
+                    List<Label> labels = getLabels(postId);
+                    post = Post.rsToPost(resultSet, labels);
                 }
             }
             return Optional.ofNullable(post);
@@ -163,11 +182,34 @@ public class PostRepositoryJdbcImpl implements PostRepository {
              ResultSet resultSet = ps.executeQuery()) {
             List<Post> posts = new ArrayList<>();
             while (resultSet.next()) {
-                // todo add labels
-                Post post = Post.rsToPost(resultSet, new ArrayList<>());
+                int postId = resultSet.getInt("id");
+                List<Label> labels = getLabels(postId);
+                Post post = Post.rsToPost(resultSet, labels);
                 posts.add(post);
             }
             return posts;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private List<Label> getLabels(Integer postId) {
+        List<Integer> labelIds = findLabelIdsByPostId(postId);
+        return labelIds.stream()
+                .map(id -> labelRepository.findById(id).orElseThrow(RuntimeException::new)).toList();
+
+    }
+
+    private List<Integer> findLabelIdsByPostId(Integer postId) {
+        try (PreparedStatement ps = getPreparedStatement(SQL_SELECT_LABEL_IDS_BY_POST)) {
+            ps.setInt(1, postId);
+            List<Integer> labelIds = new ArrayList<>();
+            try (ResultSet resultSet = ps.executeQuery()) {
+                while (resultSet.next()) {
+                    labelIds.add(resultSet.getInt("label_id"));
+                }
+            }
+            return labelIds;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

@@ -11,7 +11,7 @@ public class PostController {
     private final PostService postService;
 
     public PostController(PostRepository postRepository, LabelRepository labelRepository) {
-        this.postService = new PostService(postRepository, labelRepository);
+        this.postService = new PostService();
     }
 
     public Post createPost(

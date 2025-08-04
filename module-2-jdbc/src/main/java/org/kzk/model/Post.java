@@ -20,7 +20,7 @@ public record Post(Integer id,
                 resultSet.getString("content"),
                 resultSet.getObject("created", LocalDateTime.class),
                 resultSet.getObject("updated", LocalDateTime.class),
-                new ArrayList<>(), // todo will add label
+                labels,
                 PostStatus.valueOf(resultSet.getString("status")),
                 resultSet.getInt("writer_id")
         );

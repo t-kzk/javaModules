@@ -1,61 +1,49 @@
 package org.kzk.repository.impl;
 
-import org.kzk.env.db.DataSourceProviderMySql;
 import org.kzk.model.Label;
 import org.kzk.repository.LabelRepository;
 
-import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-public class LabelRepositoryJdbcImpl implements LabelRepository {
-    private final DataSource ds = DataSourceProviderMySql.INSTANCE.getDataSource();
+import static org.kzk.helper.JdbcHelper.getPreparedStatement;
 
+public class LabelRepositoryJdbcImpl implements LabelRepository {
     private static final String FIND_ALL = """
             SELECT * FROM labels;
             """;
     private static final String FIND_BY_ID = """
             SELECT * FROM labels where id = ?;
             """;
-    private static final String ADD_LABEL_TO_POST = """
-            INSERT INTO post_labels (post_id, label_id)
-            VALUES (?, ?);
-            """;
+
 
     @Override
-    public int addLabelsToPost(List<Integer> labelIds, Integer postId, Connection connection) {
-        try(PreparedStatement preparedStatement = connection.prepareStatement(ADD_LABEL_TO_POST)) {
-            for (Integer lableId: labelIds) {
-                preparedStatement.setInt(1, postId);
-                preparedStatement.setInt(2, lableId);
-                preparedStatement.addBatch();
-            }
-            int[] results = preparedStatement.executeBatch();
-            System.out.println("Добавлено [%d] лейблов".formatted(Arrays.stream(results).sum()));
-        } catch (SQLException e) {
-          throw new RuntimeException(e);
-      }
-        return 0;
+    public Label save(Label entity) {
+        return null;
+    }
+
+    @Override
+    public Label update(Label entity) {
+        return null;
+    }
+
+    @Override
+    public boolean delete(Label entity) {
+        return false;
     }
 
     @Override
     public Optional<Label> findById(Integer integer) {
-        try (Connection connection = ds.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_BY_ID)) {
+        try (PreparedStatement preparedStatement = getPreparedStatement(FIND_BY_ID)) {
             preparedStatement.setInt(1, integer);
             Label label = null;
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    label = new Label(
-                            resultSet.getInt("id"),
-                            resultSet.getString("name")
-                    );
+                    label = Label.rsToLabel(resultSet);
                 }
             }
             return Optional.ofNullable(label);
@@ -66,15 +54,11 @@ public class LabelRepositoryJdbcImpl implements LabelRepository {
 
     @Override
     public List<Label> findAll() {
-        try (Connection connection = ds.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(FIND_ALL);
+        try (PreparedStatement preparedStatement = getPreparedStatement(FIND_ALL);
              ResultSet resultSet = preparedStatement.executeQuery();) {
             List<Label> labels = new ArrayList<>();
             while (resultSet.next()) {
-                labels.add(new Label(
-                        resultSet.getInt("id"),
-                        resultSet.getString("name")
-                ));
+                labels.add(Label.rsToLabel(resultSet));
             }
             return labels;
         } catch (SQLException e) {
