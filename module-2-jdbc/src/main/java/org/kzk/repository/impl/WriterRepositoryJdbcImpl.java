@@ -65,7 +65,7 @@ public class WriterRepositoryJdbcImpl implements WriterRepository {
 
     @Override
     public Writer update(Writer entity) {
-        try (PreparedStatement ps = getPreparedStatementWithKeys(SQL_UPDATE_WRITER)) {
+        try (PreparedStatement ps = getPreparedStatement(SQL_UPDATE_WRITER)) {
             ps.setString(1, entity.firstName());
             ps.setString(2, entity.lastName());
             ps.setInt(3, entity.id());

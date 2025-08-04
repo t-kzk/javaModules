@@ -7,24 +7,26 @@ import org.kzk.repository.LabelRepository;
 import org.kzk.repository.PostRepository;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class PostService {
     private final PostRepository postRepository;
-private final LabelRepository labelRepository;
+    private final LabelRepository labelRepository;
 
     public PostService(PostRepository postRepository, LabelRepository labelRepository) {
         this.postRepository = postRepository;
         this.labelRepository = labelRepository;
     }
 
-    public Integer createPost(
+    public Post createPost(
             Integer writerId,
             String content,
             List<Integer> labelIds) {
 
-        List<Label> allLabels = labelRepository.findAll().stream().filter(l->labelIds.contains(l.id())).toList();
+        // todo заменить на лейбл сервис
+        List<Label> allLabels = labelRepository.findAll().stream().filter(l -> labelIds.contains(l.id())).toList();
 
         LocalDateTime created = LocalDateTime.now();
         PostStatus postStatus;
@@ -44,7 +46,7 @@ private final LabelRepository labelRepository;
         ));
     }
 
-    public boolean updatePostContent(Integer id, String newContent) {
+    public Post updatePostContent(Integer id, String newContent) {
         PostStatus postStatus;
 
         if (isContentValid(newContent)) {
@@ -54,27 +56,67 @@ private final LabelRepository labelRepository;
         }
 
         Optional<Post> byId = postRepository.findById(id);
-        byId.ifPresent(e -> System.out.println("Найден! " + id.toString()));
+        if (byId.isPresent()) {
+            Post post = byId.get();
+            return postRepository.update(
+                    new Post(
+                            post.id(),
+                            newContent,
+                            null,
+                            null,
+                            post.labels(),
+                            postStatus,
+                            post.writerId()));
+        } else {
+            throw new RuntimeException("no post id present [%d]".formatted(id));
+        }
 
-        System.out.println("Все существуюшие");
-        postRepository.findAll().forEach(e -> System.out.println(e.id()));
-
-        return postRepository.updatePostContentById(id, newContent, postStatus) > 0;
     }
 
-    public void userDeletesPost(Integer uuidPost) {
-        postRepository.setStatusById(uuidPost, PostStatus.DELETED);
+    public boolean userDeletesPost(Integer uuidPost) {
+
+        Post post = checkExistingPost(uuidPost);
+        postRepository.update(
+                new Post(
+                        post.id(),
+                        post.content(),
+                        null,
+                        null,
+                        post.labels(),
+                        PostStatus.DELETED,
+                        post.writerId()));
+        return true;
+
     }
 
-    public void adminDeletesPost(Integer uuid) {
-        postRepository.deleteById(uuid);
+    public boolean adminDeletesPost(Integer postId) {
+        Post post = checkExistingPost(postId);
+        return postRepository.delete(post);
     }
 
-    public void adminReviewPost(Integer post, PostStatus status) {
-        postRepository.setStatusById(post, status);
+    public void adminReviewPost(Integer postId, PostStatus status) {
+        Post post = checkExistingPost(postId);
+        postRepository.update(new Post(
+                post.id(),
+                post.content(),
+                null,
+                null,
+                post.labels(),
+                status,
+                post.writerId()
+        ));
     }
 
     private boolean isContentValid(String content) {
-        return (content.isBlank() || content.contains("*"));
+        return !(content.isBlank() || content.contains("*"));
+    }
+
+    public Post checkExistingPost(Integer idPost) {
+        Optional<Post> byId = postRepository.findById(idPost);
+        if (byId.isPresent()) {
+            return byId.get();
+        } else {
+            throw new RuntimeException("no post id present [%d]".formatted(idPost));
+        }
     }
 }

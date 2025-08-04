@@ -1,6 +1,7 @@
 package org.kzk.view;
 
 import org.kzk.controller.PostController;
+import org.kzk.model.Post;
 import org.kzk.repository.LabelRepository;
 import org.kzk.repository.PostRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -63,8 +64,8 @@ public class PostMenuView {
             Arrays.stream(rowLabelsArr).forEach(id -> labelsIds.add(Integer.valueOf(id)));
         }
 
-        Integer post = postController.createPost(writerId, content, labelsIds);
-        System.out.printf("Создан новый пост [%d]%n", post);
+        Post post = postController.createPost(writerId, content, labelsIds);
+        System.out.printf("Создан новый пост [%s]%n", post);
 
     }
 
@@ -74,12 +75,8 @@ public class PostMenuView {
         scanner.nextLine();
         System.out.println("Введите измененный пост:");
         String content = scanner.nextLine();
-        boolean isUpdated = postController.updatePostContent(postId, content);
-        if(isUpdated) {
-            System.out.println("Пост изменен!");
-        } else {
-            System.out.println("К сожалению, пост не был изменен");
-        }
+        Post updatedPost = postController.updatePostContent(postId, content);
+        System.out.println("Пост изменен! %s".formatted(updatedPost));
 
     }
 

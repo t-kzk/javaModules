@@ -1,5 +1,6 @@
 package org.kzk.controller;
 
+import org.kzk.model.Post;
 import org.kzk.repository.LabelRepository;
 import org.kzk.repository.PostRepository;
 import org.kzk.service.PostService;
@@ -13,14 +14,14 @@ public class PostController {
         this.postService = new PostService(postRepository, labelRepository);
     }
 
-    public Integer createPost(
+    public Post createPost(
             Integer writerId,
             String content,
             List<Integer> labelIds) {
         return postService.createPost(writerId, content, labelIds);
     }
 
-    public boolean updatePostContent(Integer postId, String newContent) {
+    public Post updatePostContent(Integer postId, String newContent) {
        return postService.updatePostContent(postId, newContent);
     }
 
