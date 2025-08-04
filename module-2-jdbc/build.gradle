@@ -12,5 +12,15 @@ dependencies {
 
     testImplementation(
             "org.junit.jupiter:junit-jupiter:$jUnitVersion"
+           /* ,
+            'org.junit.platform:junit-platform-launcher'*/
+
     )
+}
+testing {
+    suites {
+        test {
+            useJUnitJupiter()
+        }
+    }
 }

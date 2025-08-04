@@ -109,7 +109,7 @@ public class PostService {
         return !(content.isBlank() || content.contains("*"));
     }*/
 
-    private boolean isContentValid(String content) {
+     boolean isContentValid(String content) {
         // Проверка на null или пустую строку
         if (content == null || content.isEmpty()) {
             return false;

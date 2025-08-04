@@ -26,13 +26,16 @@ subprojects {
     }
 
     tasks.withType(Test).configureEach {
-        options {
-            systemProperties(System.getProperties())
-        }
+        systemProperties System.getProperties()  // более современный синтаксис
+
         testLogging {
+            events "passed", "skipped", "failed"
             showStandardStreams = true
-            exceptionFormat = 'full'
+            exceptionFormat "full"
+            showCauses true
+            showStackTraces true
         }
-        useJUnitPlatform()
+
+
     }
 }
