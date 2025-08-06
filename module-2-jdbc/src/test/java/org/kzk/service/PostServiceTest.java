@@ -9,7 +9,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.kzk.model.Post;
 import org.kzk.model.PostStatus;
 import org.kzk.repository.PostRepository;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,10 +19,9 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
-@ExtendWith(MockitoExtension.class) // Добавьте эту аннотацию
+@ExtendWith(MockitoExtension.class)
 
 class PostServiceTest {
 
@@ -53,6 +51,7 @@ class PostServiceTest {
     void isContentValidTest(String content, boolean expected) {
         // Act
         boolean result = postService.isContentValid(content);
+
         // Assert
         assertEquals(expected, result);
 
