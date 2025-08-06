@@ -6,7 +6,6 @@ import org.kzk.model.PostStatus;
 import org.kzk.repository.PostRepository;
 import org.kzk.repository.impl.PostRepositoryJdbcImpl;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,9 +17,9 @@ public class PostService {
         this.postRepository = new PostRepositoryJdbcImpl();
         this.labelService = new LabelService();
     }
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository, LabelService labelService) {
         this.postRepository = postRepository;
-        this.labelService = new LabelService();
+        this.labelService = labelService;
     }
 
     public Post createPost(
@@ -30,7 +29,6 @@ public class PostService {
 
         List<Label> allLabels = labelService.findAllLabels().stream().filter(l -> labelIds.contains(l.id())).toList();
 
-        LocalDateTime created = LocalDateTime.now();
         PostStatus postStatus;
         if (isContentValid(content)) {
             postStatus = PostStatus.ACTIVE;
@@ -40,7 +38,7 @@ public class PostService {
         return postRepository.save(new Post(
                 null,
                 content,
-                created,
+                null,
                 null,
                 allLabels,
                 postStatus,
