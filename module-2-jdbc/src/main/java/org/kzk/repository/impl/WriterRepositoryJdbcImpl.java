@@ -16,7 +16,11 @@ import static org.kzk.helper.JdbcHelper.getPreparedStatementWithKeys;
 
 public class WriterRepositoryJdbcImpl implements WriterRepository {
 
-    private final PostRepositoryJdbcImpl postRepository = new PostRepositoryJdbcImpl();
+    private final PostRepositoryJdbcImpl postRepository;
+
+    public WriterRepositoryJdbcImpl() {
+        this.postRepository = new PostRepositoryJdbcImpl();
+    }
 
     private final static String SQL_INSERT_WRITER = """
             INSERT INTO writers (first_name, last_name) 

@@ -18,6 +18,10 @@ public class PostService {
         this.postRepository = new PostRepositoryJdbcImpl();
         this.labelService = new LabelService();
     }
+    public PostService(PostRepository postRepository) {
+        this.postRepository = postRepository;
+        this.labelService = new LabelService();
+    }
 
     public Post createPost(
             Integer writerId,
@@ -105,22 +109,15 @@ public class PostService {
         ));
     }
 
-/*    private boolean isContentValid(String content) {
-        return !(content.isBlank() || content.contains("*"));
-    }*/
-
      boolean isContentValid(String content) {
-        // Проверка на null или пустую строку
         if (content == null || content.isEmpty()) {
             return false;
         }
 
-        // Проверка на наличие хотя бы одного символа '*'
         if (content.contains("*")) {
             return false;
         }
 
-        // Если все проверки пройдены
         return true;
     }
 

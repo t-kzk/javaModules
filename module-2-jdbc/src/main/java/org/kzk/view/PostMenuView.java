@@ -15,8 +15,8 @@ public class PostMenuView {
     private final PostController postController;
     private final Scanner scanner;
 
-    public PostMenuView(PostRepository postRepository, LabelRepository labelRepository, Scanner scanner) {
-        this.postController = new PostController(postRepository, labelRepository);
+    public PostMenuView(Scanner scanner) {
+        this.postController = new PostController();
         this.scanner = scanner;
     }
 

@@ -8,7 +8,11 @@ import java.util.List;
 
 public class LabelService {
 
-    private final LabelRepository labelRepository = new LabelRepositoryJdbcImpl();
+    private final LabelRepository labelRepository;
+
+    public LabelService() {
+        this.labelRepository = new LabelRepositoryJdbcImpl();
+    }
 
     public List<Label> findAllLabels() {
         return labelRepository.findAll();

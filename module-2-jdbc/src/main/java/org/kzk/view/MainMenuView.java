@@ -15,7 +15,7 @@ public class MainMenuView {
     public MainMenuView(Scanner scanner) {
         this.scanner = scanner;
         this.writerView = new WriterMenuView(scanner);
-        this.postView = new PostMenuView(new PostRepositoryJdbcImpl(), new LabelRepositoryJdbcImpl(), scanner);
+        this.postView = new PostMenuView(scanner);
     }
 
     public void showMainMenu() {

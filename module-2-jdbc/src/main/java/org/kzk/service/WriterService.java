@@ -9,7 +9,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 public class WriterService {
-    WriterRepository writerRepository = new WriterRepositoryJdbcImpl();
+    private final WriterRepository writerRepository;
+
+    public WriterService() {
+        this.writerRepository = new WriterRepositoryJdbcImpl();
+    }
 
     public Writer createWriter(String firstName, String lastName) {
         return writerRepository.save(new Writer(null, firstName, lastName, null));

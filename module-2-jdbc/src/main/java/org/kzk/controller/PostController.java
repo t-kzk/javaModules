@@ -10,7 +10,7 @@ import java.util.List;
 public class PostController {
     private final PostService postService;
 
-    public PostController(PostRepository postRepository, LabelRepository labelRepository) {
+    public PostController() {
         this.postService = new PostService();
     }
 

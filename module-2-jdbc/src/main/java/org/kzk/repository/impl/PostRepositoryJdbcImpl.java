@@ -20,7 +20,11 @@ import static org.kzk.helper.JdbcHelper.getPreparedStatementWithKeys;
 
 public class PostRepositoryJdbcImpl implements PostRepository {
 
-    LabelRepository labelRepository = new LabelRepositoryJdbcImpl();
+    private final LabelRepository labelRepository;
+
+    public PostRepositoryJdbcImpl() {
+        this.labelRepository = new LabelRepositoryJdbcImpl();
+    }
 
     private static final String SQL_FIND_ALL_BY_WRITER_ID = """
             SELECT * FROM posts WHERE writer_id = ? AND status != ?;

@@ -6,6 +6,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.kzk.helper.DataSourceProviderMySql;
 
 import java.sql.Connection;
 import java.sql.SQLException;

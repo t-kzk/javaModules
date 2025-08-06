@@ -1,9 +1,16 @@
 group = 'org.kzk'
 version = '1.0.0'
 
-
+configurations {
+    mockitoAgent {
+        canBeConsumed = false
+        canBeResolved = true
+        visible = false
+        extendsFrom = []
+    }
+}
 dependencies {
-
+    mockitoAgent "org.mockito:mockito-core:5.18.0"
     implementation(
             "mysql:mysql-connector-java:$mySqlDriver",
             "org.liquibase:liquibase-core:$liquibaseVersion"
@@ -11,16 +18,26 @@ dependencies {
 
 
     testImplementation(
-            "org.junit.jupiter:junit-jupiter:$jUnitVersion"
-           /* ,
-            'org.junit.platform:junit-platform-launcher'*/
+            "org.junit.jupiter:junit-jupiter:$jUnitVersion",
+            "org.mockito:mockito-junit-jupiter:5.18.0"
+           // "org.mockito:mockito-inline:+"
+          //   "org.mockito:mockito-core:5.18.0"
 
     )
+
 }
+
 testing {
     suites {
         test {
             useJUnitJupiter()
+            targets.all {
+                testTask.configure {
+                    // Берем первый найденный jar файл из конфигурации
+                    def mockitoJar = configurations.mockitoAgent.filter { it.name.endsWith('.jar') }.first()
+                    jvmArgs = ["-javaagent:${mockitoJar.absolutePath}"]
+                }
+            }
         }
     }
 }
