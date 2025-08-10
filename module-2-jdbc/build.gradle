@@ -1,5 +1,18 @@
+plugins {
+    id 'application'
+}
+
+application {
+    mainClassName = 'org.kzk.Main'
+}
+
+run {
+    standardInput = System.in
+}
+
 group = 'org.kzk'
 version = '1.0.0'
+
 
 configurations {
     mockitoAgent {
@@ -9,19 +22,17 @@ configurations {
         extendsFrom = []
     }
 }
+
 dependencies {
-    mockitoAgent "org.mockito:mockito-core:5.18.0"
+    mockitoAgent "org.mockito:mockito-core:$mockitoVersion"
     implementation(
             "mysql:mysql-connector-java:$mySqlDriver",
             "org.liquibase:liquibase-core:$liquibaseVersion"
     )
 
-
     testImplementation(
             "org.junit.jupiter:junit-jupiter:$jUnitVersion",
-            "org.mockito:mockito-junit-jupiter:5.18.0"
-           // "org.mockito:mockito-inline:+"
-          //   "org.mockito:mockito-core:5.18.0"
+            "org.mockito:mockito-junit-jupiter:$mockitoVersion"
 
     )
 

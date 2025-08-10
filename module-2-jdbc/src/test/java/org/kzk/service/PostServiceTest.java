@@ -12,6 +12,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.kzk.model.Post;
 import org.kzk.model.PostStatus;
 import org.kzk.repository.PostRepository;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -32,9 +34,10 @@ class PostServiceTest {
     private PostRepository postRepository;
 
     @Mock
-    LabelService labelService;
+    private LabelService labelService;
 
-    private final PostService postService = new PostService();
+    @InjectMocks
+    private  PostService postService = new PostService();
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, IllegalAccessException {
@@ -50,7 +53,7 @@ class PostServiceTest {
         field.set(target, value);
     }
 
-    private static Stream<Arguments> providePosts() {
+    private static Stream<Arguments> provideCreatePosts() {
         return Stream.of(
                 Arguments.of(new Post(
                         1,
@@ -74,7 +77,7 @@ class PostServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("providePosts")
+    @MethodSource("provideCreatePosts")
     @DisplayName("Метод сохранения поста")
     void createPostTest(Post post) {
         // Arrange
@@ -92,6 +95,111 @@ class PostServiceTest {
         Post postActual = postService.createPost(post.writerId(), post.content(), new ArrayList<>());
         // Assert
         assertEquals(post, postActual);
+    }
+
+    @Test
+    void updatePostTest() {
+        // Arrange
+        Post oldPost = new Post(
+                1,
+                "content",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                new ArrayList<>(),
+                PostStatus.ACTIVE,
+                1
+        );
+
+        Post post = new Post(
+                oldPost.id(),
+                "newContent",
+                null,
+                null,
+                oldPost.labels(),
+                PostStatus.ACTIVE,
+                oldPost.writerId()
+        );
+        when(postRepository.findById(any())).thenReturn(Optional.ofNullable(oldPost));
+        when(postRepository.update(any(Post.class))).thenReturn(post);
+        // Act
+        Post result = postService.updatePostContent(1, post.content());
+
+        assertEquals(post, result);
+    }
+
+    @Test
+    void userDeletePost() {
+        // Arrange
+        Post post = new Post(
+                1,
+                "content",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                new ArrayList<>(),
+                PostStatus.UNDER_REVIEW,
+                1
+        );
+        when(postRepository.findById(any())).thenReturn(Optional.ofNullable(post));
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        when(postRepository.update(postCaptor.capture())).thenReturn(any());
+
+        // Act
+        postService.userDeletesPost(1);
+
+        // Assert
+        Post result = postCaptor.getValue();
+        assertEquals(PostStatus.DELETED, result.status());
+
+    }
+
+    @Test
+    void adminDeletePost() {
+        // Arrange
+        Post post = new Post(
+                1,
+                "content",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                new ArrayList<>(),
+                PostStatus.UNDER_REVIEW,
+                1
+        );
+        when(postRepository.findById(any())).thenReturn(Optional.ofNullable(post));
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        when(postRepository.delete(postCaptor.capture())).thenReturn(true);
+
+        // Act
+        postService.adminDeletesPost(1);
+        // Assert
+        Post result = postCaptor.getValue();
+        assertEquals(post, result);
+
+    }
+
+    @Test
+    void adminReviewPostTest() {
+        // Arrange
+        PostStatus newStatus = PostStatus.ACTIVE;
+
+        Post post = new Post(
+                1,
+                "content",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                new ArrayList<>(),
+                PostStatus.UNDER_REVIEW,
+                1
+        );
+        when(postRepository.findById(any())).thenReturn(Optional.ofNullable(post));
+        ArgumentCaptor<Post> postCaptor = ArgumentCaptor.forClass(Post.class);
+        when(postRepository.update(postCaptor.capture())).thenReturn(any());
+
+        // Act
+        postService.adminReviewPost(1, newStatus);
+
+        // Assert
+        Post result = postCaptor.getValue();
+        assertEquals(newStatus, result.status());
     }
 
     @ParameterizedTest

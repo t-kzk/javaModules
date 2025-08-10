@@ -14,6 +14,9 @@ public class WriterService {
     public WriterService() {
         this.writerRepository = new WriterRepositoryJdbcImpl();
     }
+    public WriterService(WriterRepository writerRepository) {
+        this.writerRepository = writerRepository;
+    }
 
     public Writer createWriter(String firstName, String lastName) {
         return writerRepository.save(new Writer(null, firstName, lastName, null));

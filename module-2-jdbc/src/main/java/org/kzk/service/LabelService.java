@@ -14,6 +14,10 @@ public class LabelService {
         this.labelRepository = new LabelRepositoryJdbcImpl();
     }
 
+    public LabelService(LabelRepository labelRepository) {
+        this.labelRepository = labelRepository;
+    }
+
     public List<Label> findAllLabels() {
         return labelRepository.findAll();
     }
