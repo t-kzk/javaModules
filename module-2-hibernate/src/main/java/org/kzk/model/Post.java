@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.proxy.HibernateProxy;
+import org.kzk.jpa.converter.Updated;
+import org.kzk.jpa.converter.UpdatedConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +33,8 @@ public class Post {
     private LocalDateTime created;
 
     @Column(name = "updated")
-    private LocalDateTime updated;
+    @Convert(converter = UpdatedConverter.class)
+    private Updated updated;
 
     @Column(name = "created")
     @ManyToMany
@@ -68,5 +71,17 @@ public class Post {
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", content='" + content + '\'' +
+                ", created=" + created +
+                ", updated=" + updated +
+                ", labels=" + labels +
+                ", status=" + status +
+                '}';
     }
 }

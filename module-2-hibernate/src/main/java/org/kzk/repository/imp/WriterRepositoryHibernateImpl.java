@@ -3,8 +3,8 @@ package org.kzk.repository.imp;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
-import org.kzk.env.jpa.EmfProvider;
-import org.kzk.env.jpa.JpaService;
+import org.kzk.jpa.EmfProvider;
+import org.kzk.jpa.JpaService;
 import org.kzk.model.Writer;
 import org.kzk.repository.WriterRepository;
 

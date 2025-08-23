@@ -30,7 +30,7 @@ public class Writer {
     @Column(name = "last_name")
     private String lastName;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "writer")
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "writer")
   //  @JoinColumn(name = "post_id")
     private List<Post> posts = new ArrayList<>();
 

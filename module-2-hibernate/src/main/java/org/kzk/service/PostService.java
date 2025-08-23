@@ -1,12 +1,11 @@
 package org.kzk.service;
 
-import org.kzk.model.Label;
-import org.kzk.model.Post;
-import org.kzk.model.PostStatus;
-import org.kzk.model.Writer;
+import org.kzk.jpa.converter.Updated;
+import org.kzk.model.*;
 import org.kzk.repository.PostRepository;
 import org.kzk.repository.imp.PostRepositoryHibernateImpl;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,6 +19,7 @@ public class PostService {
         this.labelService = new LabelService();
         this.writerService = new WriterService();
     }
+
     public PostService(PostRepository postRepository, LabelService labelService, WriterService writerService) {
         this.postRepository = postRepository;
         this.labelService = labelService;
@@ -61,38 +61,18 @@ public class PostService {
             postStatus = PostStatus.UNDER_REVIEW;
         }
 
-        Optional<Post> byId = postRepository.findById(id);
-        if (byId.isPresent()) {
-            Post post = byId.get();
-            return postRepository.update(
-                    new Post(
-                            post.getId(),
-                            newContent,
-                            null,
-                            null,
-                            post.getLabels(),
-                            postStatus,
-                            post.getWriter()));
-        } else {
-            throw new RuntimeException("no post id present [%d]".formatted(id));
-        }
+        Post post = checkExistingPost(id);
+        post.setContent(newContent);
+        post.setUpdated(new Updated(LocalDate.now()));
+        post.setStatus(postStatus);
+        return postRepository.update(post);
 
     }
 
-    public boolean userDeletesPost(Integer uuidPost) {
-
+    public void userDeletesPost(Integer uuidPost) {
         Post post = checkExistingPost(uuidPost);
-        postRepository.update(
-                new Post(
-                        post.getId(),
-                        post.getContent(),
-                        null,
-                        null,
-                        post.getLabels(),
-                        PostStatus.DELETED,
-                        post.getWriter()));
-        return true;
-
+        post.setStatus(PostStatus.DELETED);
+        postRepository.update(post);
     }
 
     public boolean adminDeletesPost(Integer postId) {
@@ -102,18 +82,11 @@ public class PostService {
 
     public void adminReviewPost(Integer postId, PostStatus status) {
         Post post = checkExistingPost(postId);
-        postRepository.update(new Post(
-                post.getId(),
-                post.getContent(),
-                null,
-                null,
-                post.getLabels(),
-                status,
-                post.getWriter()
-        ));
+        post.setStatus(status);
+        postRepository.update(post);
     }
 
-     boolean isContentValid(String content) {
+    boolean isContentValid(String content) {
         if (content == null || content.isEmpty()) {
             return false;
         }

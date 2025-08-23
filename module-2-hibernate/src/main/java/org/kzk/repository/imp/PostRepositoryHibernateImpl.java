@@ -1,7 +1,7 @@
 package org.kzk.repository.imp;
 
-import org.kzk.env.jpa.EmfProvider;
-import org.kzk.env.jpa.JpaService;
+import org.kzk.jpa.EmfProvider;
+import org.kzk.jpa.JpaService;
 import org.kzk.model.Post;
 import org.kzk.repository.PostRepository;
 
@@ -37,8 +37,9 @@ public class PostRepositoryHibernateImpl extends JpaService implements PostRepos
 
     @Override
     public Optional<Post> findById(Integer integer) {
-        Post post = em.createQuery("from Post where id = :id", Post.class)
-                .setParameter("id", integer).getSingleResult();
+       /* Post post = em.createQuery("from Post where id = :id", Post.class)
+                .setParameter("id", integer).getSingleResult();*/
+        Post post = em.find(Post.class, integer);
         return Optional.of(post);
     }
 

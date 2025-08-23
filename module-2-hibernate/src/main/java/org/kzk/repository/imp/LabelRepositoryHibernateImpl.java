@@ -1,7 +1,7 @@
 package org.kzk.repository.imp;
 
-import org.kzk.env.jpa.EmfProvider;
-import org.kzk.env.jpa.JpaService;
+import org.kzk.jpa.EmfProvider;
+import org.kzk.jpa.JpaService;
 import org.kzk.model.Label;
 import org.kzk.repository.LabelRepository;
 

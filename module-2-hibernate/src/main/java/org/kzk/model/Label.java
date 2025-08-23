@@ -41,4 +41,11 @@ public class Label {
     public final int hashCode() {
         return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "Label{" +
+                "name='" + name + '\'' +
+                '}';
+    }
 }

@@ -14,22 +14,31 @@ public class WriterService {
     public WriterService() {
         this.writerRepository = new WriterRepositoryHibernateImpl();
     }
+
     public WriterService(WriterRepository writerRepository) {
         this.writerRepository = writerRepository;
     }
 
     public Writer createWriter(String firstName, String lastName) {
-        return writerRepository.save(new Writer(null, firstName, lastName, null));
-
+        return writerRepository.save(
+                new Writer(
+                        null,
+                        firstName,
+                        lastName,
+                        null
+                )
+        );
     }
 
     public Writer updateWriter(Integer writerId, String firstName, String lastName) {
         Optional<Writer> currenOpt = writerRepository.findById(writerId);
         if (currenOpt.isPresent()) {
-            Writer currentOldWriter = currenOpt.get();
-            String finalFirstName = checkFirstNameForUpdate(currentOldWriter, firstName);
-            String finalLastName = checkLastName(currentOldWriter, lastName);
-            return writerRepository.update(new Writer(writerId, finalFirstName, finalLastName, null));
+            Writer currentWriter = currenOpt.get();
+            String finalFirstName = checkFirstNameForUpdate(currentWriter, firstName);
+            String finalLastName = checkLastName(currentWriter, lastName);
+            currentWriter.setFirstName(finalFirstName);
+            currentWriter.setLastName(finalLastName);
+            return writerRepository.update(currentWriter);
         } else {
             throw new RuntimeException("The user [%d] is not exist".formatted(writerId));
         }
@@ -40,11 +49,11 @@ public class WriterService {
         return writerRepository.findAll();
     }
 
-    public boolean deleteWriter(Integer writerId) {
+    public void deleteWriter(Integer writerId) {
         Optional<Writer> currenOpt = writerRepository.findById(writerId);
         if (currenOpt.isPresent()) {
             Writer writer = currenOpt.get();
-            return writerRepository.delete(writer);
+            writerRepository.delete(writer);
         } else {
             throw new RuntimeException("The user [%d] is not exist".formatted(writerId));
         }
@@ -74,7 +83,7 @@ public class WriterService {
 
     public Writer writerInfo(Integer writerId) {
         Optional<Writer> writer = writerRepository.findById(writerId);
-        if(writer.isPresent()) {
+        if (writer.isPresent()) {
             return writer.get();
         } else {
             throw new RuntimeException("Writer is not exist!");
