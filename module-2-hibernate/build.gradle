@@ -1,0 +1,43 @@
+plugins {
+    id 'java'
+    id 'application'
+    id("io.freefair.lombok") version "8.14"
+}
+
+group = 'org.kzk'
+version = '1.0.0'
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainClassName = 'org.kzk.Main'
+}
+
+dependencies {
+    implementation "org.postgresql:postgresql:$postgresDriver"
+    implementation "org.flywaydb:flyway-core:$flywayVersion"
+    implementation "org.hibernate:hibernate-core:$hibernateVersion"
+    runtimeOnly "org.flywaydb:flyway-database-postgresql:$flywayVersion"
+    implementation("org.apache.commons:commons-lang3:3.18.0")
+
+    testImplementation "org.junit.jupiter:junit-jupiter:$jUnitVersion"
+    testImplementation "org.mockito:mockito-junit-jupiter:$mockitoVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task migrateDatabase(type: JavaExec) {
+    dependsOn compileJava
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'org.kzk.env.FlywayMigrationRunner'
+}
+
+run {
+    standardInput = System.in
+    dependsOn(migrateDatabase)
+}

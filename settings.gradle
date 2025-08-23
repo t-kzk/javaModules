@@ -1,3 +1,4 @@
 rootProject.name = 'javaModules'
 include 'module-2-jdbc'
+include 'module-2-hibernate'
 

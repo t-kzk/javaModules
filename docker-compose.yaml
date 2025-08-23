@@ -6,14 +6,22 @@ services:
       - 3306:3306
     environment:
       - MYSQL_ROOT_PASSWORD=secret
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      timeout: 3s
-      retries: 5
-      interval: 3s
     volumes:
       - mysql_data:/var/lib/mysql
     dns_search: .
 
+  pg-db:
+    image: postgres:14.18
+    container_name: pg-db
+    ports:
+      - 5432:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=secret
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    dns_search: .
+
 volumes:  # ← Добавляем объявление тома
   mysql_data:
+  pg_data:

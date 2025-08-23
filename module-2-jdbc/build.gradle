@@ -24,17 +24,13 @@ configurations {
 }
 
 dependencies {
-    mockitoAgent "org.mockito:mockito-core:$mockitoVersion"
-    implementation(
-            "mysql:mysql-connector-java:$mySqlDriver",
-            "org.liquibase:liquibase-core:$liquibaseVersion"
-    )
 
-    testImplementation(
-            "org.junit.jupiter:junit-jupiter:$jUnitVersion",
-            "org.mockito:mockito-junit-jupiter:$mockitoVersion"
+    implementation "mysql:mysql-connector-java:$mySqlDriver"
+    implementation "org.liquibase:liquibase-core:$liquibaseVersion"
 
-    )
+    testImplementation "org.junit.jupiter:junit-jupiter:$jUnitVersion"
+    testImplementation "org.mockito:mockito-junit-jupiter:$mockitoVersion"
+    testImplementation "org.mockito:mockito-core:$mockitoVersion"
 
 }
 
