@@ -26,6 +26,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter:$jUnitVersion"
     testImplementation "org.mockito:mockito-junit-jupiter:$mockitoVersion"
     testImplementation "org.mockito:mockito-core:$mockitoVersion"
+    testImplementation "org.hibernate.orm:hibernate-testing:$hibernateVersion"
 }
 
 test {

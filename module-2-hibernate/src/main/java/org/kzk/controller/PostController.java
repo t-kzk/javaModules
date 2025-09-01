@@ -4,6 +4,7 @@ import org.kzk.model.Post;
 import org.kzk.service.PostService;
 
 import java.util.List;
+import java.util.Set;
 
 public class PostController {
     private final PostService postService;
@@ -15,7 +16,7 @@ public class PostController {
     public Post createPost(
             Integer writerId,
             String content,
-            List<Integer> labelIds) {
+            Set<Integer> labelIds) {
         return postService.createPost(writerId, content, labelIds);
     }
 

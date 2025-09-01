@@ -8,14 +8,18 @@ import org.kzk.repository.PostRepository;
 import java.util.List;
 import java.util.Optional;
 
-public class PostRepositoryHibernateImpl extends JpaService implements PostRepository {
-    public PostRepositoryHibernateImpl() {
+public class HibernatePostRepositoryImpl extends JpaService implements PostRepository {
+    public HibernatePostRepositoryImpl() {
         super(EmfProvider.INSTANCE.getEmf().createEntityManager());
     }
 
     @Override
     public List<Post> findAllByWriterId(Integer writerId) {
-        return em.createQuery("from Post where writer=:writerId", Post.class)
+        return em.createQuery("""
+                        from Post p 
+                        join fetch Label l join fetch Writer 
+                        where p.writer.id=:writerId
+                        """, Post.class)
                 .setParameter("writerId", writerId).getResultList();
     }
 
@@ -37,9 +41,12 @@ public class PostRepositoryHibernateImpl extends JpaService implements PostRepos
 
     @Override
     public Optional<Post> findById(Integer integer) {
-       /* Post post = em.createQuery("from Post where id = :id", Post.class)
-                .setParameter("id", integer).getSingleResult();*/
-        Post post = em.find(Post.class, integer);
+        Post post = em.createQuery(
+                        """
+                               from Post p join fetch p.writer 
+                               join fetch p.labels where p.id = :id
+                                """, Post.class)
+                .setParameter("id", integer).getSingleResult();
         return Optional.of(post);
     }
 

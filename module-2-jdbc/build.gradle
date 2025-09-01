@@ -34,17 +34,6 @@ dependencies {
 
 }
 
-testing {
-    suites {
-        test {
-            useJUnitJupiter()
-            targets.all {
-                testTask.configure {
-                    // Берем первый найденный jar файл из конфигурации
-                    def mockitoJar = configurations.mockitoAgent.filter { it.name.endsWith('.jar') }.first()
-                    jvmArgs = ["-javaagent:${mockitoJar.absolutePath}"]
-                }
-            }
-        }
-    }
+test {
+    useJUnitPlatform()
 }

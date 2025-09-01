@@ -1,22 +1,25 @@
 package org.kzk.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.proxy.HibernateProxy;
 import org.kzk.jpa.converter.Updated;
 import org.kzk.jpa.converter.UpdatedConverter;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "posts", schema = "module_2_hibernate")
 public class Post {
@@ -36,7 +39,6 @@ public class Post {
     @Convert(converter = UpdatedConverter.class)
     private Updated updated;
 
-    @Column(name = "created")
     @ManyToMany
     @JoinTable(name = "post_labels",
             schema = "module_2_hibernate",
@@ -47,13 +49,16 @@ public class Post {
                     @JoinColumn(name = "label_id", referencedColumnName = "id")
             }
     )
-    private List<Label> labels;
+   // @BatchSize(size = 3)
+    @Fetch(FetchMode.SUBSELECT)
+    @Builder.Default
+    private Set<Label> labels = new HashSet<>();
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private PostStatus status;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "writer_id")
     private Writer writer;
 

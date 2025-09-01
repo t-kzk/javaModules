@@ -4,10 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.kzk.controller.PostController;
 import org.kzk.model.Post;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class PostMenuView {
     private final PostController postController;
@@ -55,7 +52,7 @@ public class PostMenuView {
         // todo вывести доступные лейблы
         System.out.println("Введите номер лейбла (если их несколько - через пробел)");
         String rowLabels = scanner.nextLine();
-        List<Integer> labelsIds = new ArrayList<>();
+        Set<Integer> labelsIds = new HashSet<>();
 
         if(!StringUtils.isEmpty(rowLabels)) {
             String[] rowLabelsArr = rowLabels.split(" ");

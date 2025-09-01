@@ -1,10 +1,10 @@
 package org.kzk.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.ArrayList;
@@ -15,6 +15,7 @@ import java.util.Objects;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "writers", schema = "module_2_hibernate")
 public class Writer {
@@ -30,8 +31,11 @@ public class Writer {
     @Column(name = "last_name")
     private String lastName;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE, mappedBy = "writer")
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, mappedBy = "writer")
+   // @BatchSize(size = 3)
   //  @JoinColumn(name = "post_id")
+    @Fetch(FetchMode.SUBSELECT)
+    @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
     @Override

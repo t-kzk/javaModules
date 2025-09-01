@@ -11,8 +11,8 @@ import org.kzk.repository.WriterRepository;
 import java.util.List;
 import java.util.Optional;
 
-public class WriterRepositoryHibernateImpl extends JpaService implements WriterRepository {
-    public WriterRepositoryHibernateImpl() {
+public class HibernateWriterRepositoryImpl extends JpaService implements WriterRepository {
+    public HibernateWriterRepositoryImpl() {
         super(EmfProvider.INSTANCE.getEmf().createEntityManager());
     }
 
@@ -33,7 +33,7 @@ public class WriterRepositoryHibernateImpl extends JpaService implements WriterR
 
     @Override
     public Writer update(Writer entity) {
-       return merge(entity);
+        return merge(entity);
     }
 
     @Override
@@ -45,19 +45,22 @@ public class WriterRepositoryHibernateImpl extends JpaService implements WriterR
     @Override
     public Optional<Writer> findById(Integer integer) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Writer> query = cb.createQuery(Writer.class);
-        Root<Writer> root = query.from(Writer.class);
-        query.select(root);
-        query.where(
-                cb.equal(root.get("id"), integer)
+        CriteriaQuery<Writer> criteria = cb.createQuery(Writer.class);
+        Root<Writer> rootWriterTable = criteria.from(Writer.class);
+        criteria.select(rootWriterTable);
+        criteria.where(
+                cb.equal(rootWriterTable.get("id"), integer)
         );
-        Writer result = em.createQuery(query).getSingleResult();
+        Writer result = em.createQuery(criteria).getSingleResult();
 
         return Optional.of(result);
     }
 
     @Override
     public List<Writer> findAll() {
-        return em.createQuery("from Writer", Writer.class).getResultList();
+        return em.createQuery("""
+                        select w from Writer w left join fetch w.posts p left join fetch p.labels l
+                        """, Writer.class)
+                .getResultList();
     }
 }

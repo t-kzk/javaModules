@@ -2,7 +2,7 @@ package org.kzk.service;
 
 import org.kzk.model.Writer;
 import org.kzk.repository.WriterRepository;
-import org.kzk.repository.imp.WriterRepositoryHibernateImpl;
+import org.kzk.repository.imp.HibernateWriterRepositoryImpl;
 
 import java.util.List;
 import java.util.Objects;
@@ -12,7 +12,7 @@ public class WriterService {
     private final WriterRepository writerRepository;
 
     public WriterService() {
-        this.writerRepository = new WriterRepositoryHibernateImpl();
+        this.writerRepository = new HibernateWriterRepositoryImpl();
     }
 
     public WriterService(WriterRepository writerRepository) {
@@ -20,14 +20,11 @@ public class WriterService {
     }
 
     public Writer createWriter(String firstName, String lastName) {
-        return writerRepository.save(
-                new Writer(
-                        null,
-                        firstName,
-                        lastName,
-                        null
-                )
-        );
+        Writer writer = Writer.builder()
+                .firstName(firstName)
+                .lastName(lastName)
+                .build();
+        return writerRepository.save(writer);
     }
 
     public Writer updateWriter(Integer writerId, String firstName, String lastName) {

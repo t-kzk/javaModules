@@ -1,8 +1,9 @@
 package org.kzk.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.util.ArrayList;
@@ -12,6 +13,9 @@ import java.util.Objects;
 @Getter
 @Setter
 @Entity
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Table(name = "labels", schema = "module_2_hibernate")
 public class Label {
 
@@ -24,6 +28,8 @@ public class Label {
     private String name;
 
     @ManyToMany(mappedBy = "labels")
+    @Fetch(FetchMode.SUBSELECT)
+    @Builder.Default
     private List<Post> posts = new ArrayList<>();
 
     @Override

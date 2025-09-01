@@ -1,13 +1,17 @@
 package org.kzk.service;
 
 import org.kzk.jpa.converter.Updated;
-import org.kzk.model.*;
+import org.kzk.model.Label;
+import org.kzk.model.Post;
+import org.kzk.model.PostStatus;
+import org.kzk.model.Writer;
 import org.kzk.repository.PostRepository;
-import org.kzk.repository.imp.PostRepositoryHibernateImpl;
+import org.kzk.repository.imp.HibernatePostRepositoryImpl;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Set;
 
 public class PostService {
     private final PostRepository postRepository;
@@ -15,7 +19,7 @@ public class PostService {
     private final WriterService writerService;
 
     public PostService() {
-        this.postRepository = new PostRepositoryHibernateImpl();
+        this.postRepository = new HibernatePostRepositoryImpl();
         this.labelService = new LabelService();
         this.writerService = new WriterService();
     }
@@ -29,9 +33,13 @@ public class PostService {
     public Post createPost(
             Integer writerId,
             String content,
-            List<Integer> labelIds) {
+            Set<Integer> labelIds) {
 
-        List<Label> allLabels = labelService.findAllLabels().stream().filter(l -> labelIds.contains(l.getId())).toList();
+        Set<Label> allLabels = labelService.findAllLabelsByIds(labelIds);
+        if(labelIds.size()!=allLabels.size()) {
+            System.out.println("oi");
+            throw new IllegalArgumentException("Labels not exist " + labelIds);
+        }
 
         PostStatus postStatus;
         if (isContentValid(content)) {
@@ -41,15 +49,15 @@ public class PostService {
         }
 
         Writer writer = writerService.writerInfo(writerId);
-        return postRepository.save(new Post(
-                null,
-                content,
-                null,
-                null,
-                allLabels,
-                postStatus,
-                writer
-        ));
+
+        Post post = Post.builder()
+                .content(content)
+                .created(LocalDateTime.now())
+                .labels(allLabels)
+                .status(postStatus)
+                .writer(writer)
+                .build();
+        return postRepository.save(post);
     }
 
     public Post updatePostContent(Integer id, String newContent) {
