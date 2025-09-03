@@ -1,10 +1,9 @@
 package org.kzk.repository.imp;
 
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.*;
 import org.kzk.jpa.EmfProvider;
 import org.kzk.jpa.JpaService;
+import org.kzk.model.Post;
 import org.kzk.model.Writer;
 import org.kzk.repository.WriterRepository;
 
@@ -47,6 +46,8 @@ public class HibernateWriterRepositoryImpl extends JpaService implements WriterR
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<Writer> criteria = cb.createQuery(Writer.class);
         Root<Writer> rootWriterTable = criteria.from(Writer.class);
+        Fetch<Writer, Post> postsFetch = rootWriterTable.fetch("posts", JoinType.LEFT);
+        postsFetch.fetch("labels", JoinType.LEFT);
         criteria.select(rootWriterTable);
         criteria.where(
                 cb.equal(rootWriterTable.get("id"), integer)

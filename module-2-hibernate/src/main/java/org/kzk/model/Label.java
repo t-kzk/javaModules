@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@NamedEntityGraph(name = "withPosts",
+attributeNodes = {
+        @NamedAttributeNode("posts")
+})
 @Getter
 @Setter
 @Entity
@@ -51,7 +55,8 @@ public class Label {
     @Override
     public String toString() {
         return "Label{" +
-                "name='" + name + '\'' +
+                "id=" + id +
+                ", name='" + name + '\'' +
                 '}';
     }
 }

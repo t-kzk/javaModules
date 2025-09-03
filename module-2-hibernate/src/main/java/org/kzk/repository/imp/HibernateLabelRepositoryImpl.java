@@ -1,16 +1,17 @@
 package org.kzk.repository.imp;
 
+import jakarta.persistence.EntityGraph;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
+import org.hibernate.graph.GraphSemantic;
+import org.kzk.Main;
 import org.kzk.jpa.EmfProvider;
 import org.kzk.jpa.JpaService;
 import org.kzk.model.Label;
 import org.kzk.repository.LabelRepository;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class HibernateLabelRepositoryImpl extends JpaService implements LabelRepository {
@@ -44,7 +45,13 @@ public class HibernateLabelRepositoryImpl extends JpaService implements LabelRep
 
     @Override
     public List<Label> findAll() {
-        return em.createQuery("from Label", Label.class).getResultList();
+        EntityGraph<?> graph = em.createEntityGraph("withPosts");
+
+        return em.createQuery("SELECT l FROM Label l", Label.class)
+                .setHint("jakarta.persistence.loadgraph", graph)
+                .getResultList();
+
+        //return em.createQuery("from Label l", Label.class).getResultList();
     }
 
     @Override
