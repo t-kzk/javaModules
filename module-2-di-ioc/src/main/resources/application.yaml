@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: module-2-di-ioc
+
+
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/module_2_di_ioc
+#    username: root
+#    password: secret
+#    driver-class-name: com.mysql.jdbc.Driver
+
+  #
+  flyway:
+    baseline-on-migrate: true
+    user: root
+    password: secret
+    create-schemas: true
+    schemas: module_2_di_ioc
+    url: jdbc:mysql://localhost:3306/module_2_di_ioc
+
+  r2dbc:
+    url: r2dbc:pool:mysql://localhost:3306/module_2_di_ioc
+    username: root
+    password: secret
+
+  #  jpa:
+#    properties:
+#      hibernate:
+#        jdbc:
+#          lob:
+#            non_contextual_creation: true
+#        dialect: org.hibernate.dialect.MySQL8Dialect
+#    hibernate:
+#      ddl-auto: update
+
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+
+  http:
+    codecs:
+      log-request-details: true
+
+logging:
+  level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.oauth2: DEBUG
+#    org.springframework.boot.autoconfigure: DEBUG
+
+minio:
+  url: http://localhost:9000
+  access-key: minioadmin
+  secret-key: minioadmin
+  bucket: di-ioc

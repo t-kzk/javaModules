@@ -10,23 +10,11 @@ services:
       - mysql_data:/var/lib/mysql
     dns_search: .
 
-  pg-db:
-    image: postgres:14.18
-    container_name: pg-db
-    ports:
-      - 5432:5432
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=secret
-    volumes:
-      - pg_data:/var/lib/postgresql/data
-    dns_search: .
-
   mino:
     image: quay.io/minio/minio:latest
     container_name: minio
     ports:
-      - 9000:9000   # API
+      - 9000:9000   # API (для приложений)
       - 9001:9001  # Web UI
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -38,3 +26,4 @@ services:
 volumes:  # ← Добавляем объявление тома
   mysql_data:
   pg_data:
+  ./data/minio:
