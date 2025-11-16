@@ -2,36 +2,18 @@ spring:
   application:
     name: module-2-di-ioc
 
-
-#  datasource:
-#    url: jdbc:mysql://localhost:3306/module_2_di_ioc
-#    username: root
-#    password: secret
-#    driver-class-name: com.mysql.jdbc.Driver
-
-  #
   flyway:
     baseline-on-migrate: true
     user: root
     password: secret
     create-schemas: true
     schemas: module_2_di_ioc
-    url: jdbc:mysql://localhost:3306/module_2_di_ioc
+#    url: jdbc:mysql://localhost:3306/module_2_di_ioc
 
   r2dbc:
-    url: r2dbc:pool:mysql://localhost:3306/module_2_di_ioc
+#    url: r2dbc:pool:mysql://localhost:3306/module_2_di_ioc
     username: root
     password: secret
-
-  #  jpa:
-#    properties:
-#      hibernate:
-#        jdbc:
-#          lob:
-#            non_contextual_creation: true
-#        dialect: org.hibernate.dialect.MySQL8Dialect
-#    hibernate:
-#      ddl-auto: update
 
   servlet:
     multipart:
@@ -49,9 +31,50 @@ logging:
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
 #    org.springframework.boot.autoconfigure: DEBUG
+    org.springframework.http.codec: DEBUG
 
 minio:
-  url: http://localhost:9000
+#  url: http://localhost:9000
   access-key: minioadmin
   secret-key: minioadmin
   bucket: di-ioc
+
+jwt:
+  password:
+    encoder:
+      secret: secret
+      iteration: 64
+      keylength: 254
+  secret: eFJi8wm1GqZwZyHas6mD3bzlA3Yb36V0EkLz358fWAs=
+  experation: 3600
+  issuer: kzk
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 'local'
+
+  flyway:
+    url: jdbc:mysql://localhost:3306/module_2_di_ioc
+
+  r2dbc:
+    url: r2dbc:pool:mysql://localhost:3306/module_2_di_ioc
+
+minio:
+  url: http://localhost:9000
+
+---
+spring:
+  config:
+    activate:
+      on-profile: 'docker'
+
+  flyway:
+    url: jdbc:mysql://mysql:3306/
+
+  r2dbc:
+    url: r2dbc:pool:mysql://mysql:3306/module_2_di_ioc
+
+minio:
+  url: http://minio:9000

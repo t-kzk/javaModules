@@ -1,41 +1,70 @@
 package org.kzk.controller;
 
-import io.netty.handler.codec.http.HttpHeaders;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.kzk.data.FileRepository;
-import org.kzk.data.entity.FileE;
-import org.kzk.minio.MinioService;
-import org.kzk.service.FileService;
+import org.kzk.data.entity.UserRole;
+import org.kzk.dto.FileInfoDto;
+import org.kzk.dto.mapper.FileMapper;
+import org.kzk.security.CustomPrincipal;
+import org.kzk.service.FileServiceImpl;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
-import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.server.HttpServerRequest;
-import reactor.netty.http.server.HttpServerResponse;
-
-import java.io.File;
 
 @Slf4j
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/v1/file")
 public class FileController {
-    private final FileService fileService;
-
-    public FileController(FileService fileService) {
-        this.fileService = fileService;
-    }
+    private final FileServiceImpl fileService;
+    private final FileMapper fileMapper;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public Mono<FileE> upload(@RequestPart("file") FilePart file, ServerHttpRequest request) {
-        return fileService.createFile(1, file);
+    public Mono<FileInfoDto> upload(
+            @RequestPart("file") FilePart file,
+            Authentication authentication) {
+        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
+        return fileService.uploadFile(principal.getUserId(), file).map(fileMapper::map);
     }
 
     @GetMapping
-    public Flux<FileE> getAll() {
-        return fileService.findAll();
-
+    public Flux<FileInfoDto> getAll(Authentication authentication) {
+        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
+        if (UserRole.ADMIN_ROLE.equals(principal.getRole())) {
+            return fileService.findAll().map(fileMapper::map);
+        } else {
+            return fileService.findAllByUserId(principal.getUserId()).map(fileMapper::map);
+        }
     }
+
+    @GetMapping("/{fileId}")
+    public Mono<Resource> download(
+            @PathVariable Integer fileId,
+            Authentication authentication) {
+        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
+        return fileService.downloadFile(fileId);
+    }
+
+    @PutMapping(value = "/{fileId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public Mono<FileInfoDto> update(
+            @PathVariable Integer fileId,
+            @RequestPart("file") FilePart file,
+            Authentication authentication) {
+        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
+        return fileService.updateFile(principal.getUserId(), fileId, file).map(fileMapper::map);
+    }
+
+    @DeleteMapping(value = "/{fileId}")
+    public Mono<Void> delete(
+            @PathVariable Integer fileId,
+            Authentication authentication) {
+        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
+        return fileService.deleteFile(principal.getUserId(), fileId);
+    }
+
+
 }

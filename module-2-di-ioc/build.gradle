@@ -32,8 +32,10 @@ dependencies {
  	implementation "mysql:mysql-connector-java:$mySqlDriver"
 
 	// Utils
-	implementation("org.mapstruct:mapstruct:1.6.3")
-	implementation("org.mapstruct:mapstruct-processor:1.6.3")
+	implementation "org.mapstruct:mapstruct:$mapStructVersion"
+	compileOnly('org.projectlombok:lombok')
+	annotationProcessor "org.projectlombok:lombok"
+	annotationProcessor "org.mapstruct:mapstruct-processor:$mapStructVersion"
 
 	// Security
 	implementation 'org.springframework.boot:spring-boot-starter-security'
