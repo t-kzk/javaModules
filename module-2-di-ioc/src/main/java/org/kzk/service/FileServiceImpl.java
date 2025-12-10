@@ -20,13 +20,14 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileServiceImpl {
+public class FileServiceImpl implements FileService{
 
     private final FileRepository filesRepository;
-    private final Event eventServiceImpl;
+    private final EventService eventServiceImpl;
     private final FileStorage fileStorage;
     private final TransactionalOperator reactiveTx;
 
+    @Override
     public Mono<FileEntity> uploadFile(
             Integer userId,
             FilePart file) {
@@ -46,6 +47,7 @@ public class FileServiceImpl {
                 )).onErrorResume(e -> fileStorage.deleteFile(path).then(Mono.error(e)));
     }
 
+    @Override
     public Mono<FileEntity> updateFile(
             Integer userId,
             Integer fileId,
@@ -65,6 +67,7 @@ public class FileServiceImpl {
                 });
     }
 
+    @Override
     public Mono<Void> deleteFile(int userId, int fileId) {
         return filesRepository.findById(fileId)
                 .switchIfEmpty(Mono.error(new ResponseStatusException(
@@ -82,14 +85,17 @@ public class FileServiceImpl {
                 }).then();
     }
 
+    @Override
     public Flux<FileEntity> findAll() {
         return filesRepository.findAll();
     }
 
+    @Override
     public Flux<FileEntity> findAllByUserId(Integer userId) {
         return filesRepository.findAllByUserId(userId);
     }
 
+    @Override
     public Mono<Resource> downloadFile(Integer fileId) {
         return filesRepository.findById(fileId).flatMap(file -> {
             String location = file.getLocation();

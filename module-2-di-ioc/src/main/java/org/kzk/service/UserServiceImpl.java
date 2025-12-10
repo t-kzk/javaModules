@@ -17,14 +17,14 @@ import reactor.core.publisher.Mono;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class UserServiceImpl {
+public class UserServiceImpl implements UserService{
     private final UserRepository writersRepository;
     private final AuthRepository authRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final TransactionalOperator reactiveTx;
 
-
+    @Override
     public Mono<UserEntity> createUser(
             String username,
             String passwordRaw) {
@@ -43,14 +43,17 @@ public class UserServiceImpl {
                 .doOnSuccess(u -> log.info("User created: {}", u));
     }
 
+    @Override
     public Mono<UserEntity> findByName(String name) {
         return writersRepository.findByUsername(name);
     }
 
+    @Override
     public Mono<UserEntity> findById(Integer id) {
         return writersRepository.findById(id);
     }
 
+    @Override
     public Mono<Void> deleteUser(Integer userId) {
         return writersRepository.findById(userId).flatMap(user -> {
                     user.setStatus(UserStatus.BLOCKED);

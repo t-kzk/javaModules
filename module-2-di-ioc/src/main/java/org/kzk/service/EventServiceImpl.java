@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class EventServiceImpl implements Event {
+public class EventServiceImpl implements EventService {
 
     private final EventRepository eventsRepository;
 

@@ -6,7 +6,7 @@ import org.kzk.data.entity.UserRole;
 import org.kzk.dto.FileInfoDto;
 import org.kzk.dto.mapper.FileMapper;
 import org.kzk.security.CustomPrincipal;
-import org.kzk.service.FileServiceImpl;
+import org.kzk.service.FileService;
 import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/file")
 public class FileController {
-    private final FileServiceImpl fileService;
+    private final FileService fileService;
     private final FileMapper fileMapper;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

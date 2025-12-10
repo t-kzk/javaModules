@@ -8,7 +8,7 @@ import org.kzk.dto.UserDto;
 import org.kzk.dto.mapper.UserMapper;
 import org.kzk.security.CustomPrincipal;
 import org.kzk.security.SecurityService;
-import org.kzk.service.UserServiceImpl;
+import org.kzk.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final SecurityService securityService;
     private final UserMapper userMapper;
 
