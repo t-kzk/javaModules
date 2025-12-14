@@ -23,11 +23,12 @@ public class EventServiceImpl implements EventService {
             EventStatus status
     ) {
         return eventsRepository.save(
-                EventEntity.builder()
-                        .userId(userId)
-                        .fileId(fileId)
-                        .status(status)
-                        .build());
+                        EventEntity.builder()
+                                .userId(userId)
+                                .fileId(fileId)
+                                .status(status)
+                                .build())
+                .onErrorResume(ex -> Mono.error(new RuntimeException("sorry!")));
     }
 
 }

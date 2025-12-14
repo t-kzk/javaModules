@@ -13,7 +13,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import static org.junit.Assert.assertEquals;
+import java.io.IOException;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
@@ -40,11 +42,26 @@ class EventServiceImplTests {
 
         StepVerifier.create(event)
                 .assertNext(ev -> {
-                    assertEquals(EventStatus.CREATED, ev.getStatus());
-                    /*assertEquals(1, ev.getUserId());
-                    assertEquals(2, ev.getFileId());*/
+                    assertThat(ev.getStatus()).isEqualTo(EventStatus.CREATED);
+                    assertThat(ev.getUserId()).isEqualTo(1L);
+                    assertThat(ev.getFileId()).isEqualTo(2L);
                 })
                 .verifyComplete();
+    }
+
+    @Test
+    void givenEventToSave_whenSaveEvent_thenRepositoryIsNotCalled() {
+        //given
+        Mockito.when(eventsRepository.save(any(EventEntity.class)))
+                .thenReturn(Mono.error(new IOException("oii")));
+        //when
+        Mono<EventEntity> event = eventService.createEvent(1, 2, EventStatus.CREATED);
+        //then
+        StepVerifier.create(event)
+                .expectErrorMatches(throwable ->
+                        throwable instanceof RuntimeException &&
+                                throwable.getMessage().equals("sorry!"))
+                .verify();
     }
 
 }
