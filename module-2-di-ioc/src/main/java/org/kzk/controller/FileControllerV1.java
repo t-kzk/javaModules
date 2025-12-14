@@ -19,7 +19,7 @@ import reactor.core.publisher.Mono;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/file")
-public class FileController {
+public class FileControllerV1 {
     private final FileService fileService;
     private final FileMapper fileMapper;
 
