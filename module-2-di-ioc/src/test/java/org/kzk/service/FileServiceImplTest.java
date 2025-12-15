@@ -12,14 +12,19 @@ import org.kzk.storage.FileStorage;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.transaction.reactive.TransactionalOperator;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import java.util.Objects;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.kzk.TestData.FILE_PATH;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -180,7 +185,6 @@ public class FileServiceImplTest {
         when(fileRepository.findById(666))
                 .thenReturn(Mono.empty());
 
-
         // when
         Mono<Void> result = fileService.deleteFile(1, 666);
 
@@ -190,5 +194,70 @@ public class FileServiceImplTest {
                         ex instanceof ResponseStatusException statusEx &&
                                 statusEx.getStatusCode().is4xxClientError())
                 .verify();
+    }
+
+    @Test
+    void givenFilesForFind_whenRepositoryFindAll_thenAllFiles() {
+        // given
+        when(fileRepository.findAll())
+                .thenReturn(Flux.just(TestData.fileWithStatusActive(),
+                        TestData.fileWithStatusActive()));
+
+        // when
+        Flux<FileEntity> result = fileService.findAll();
+
+        // then
+        StepVerifier.create(result.collectList())
+                .assertNext(files -> {
+                    assertEquals(2, files.size());
+                    assertTrue(
+                            files.stream()
+                                    .allMatch(f -> f.getStatus() == FileStatus.ACTIVE)
+                    );
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void givenFilesForFind_whenRepositoryFindAllByUserId_thenAllFilesByUser() {
+        // given
+        when(fileRepository.findAllByUserId(any()))
+                .thenReturn(Flux.just(TestData.fileWithStatusActive(),
+                        TestData.fileWithStatusActive()));
+
+        // when
+        Flux<FileEntity> result = fileService.findAllByUserId(15);
+
+        // then
+        StepVerifier.create(result.collectList())
+                .assertNext(files -> {
+                    assertEquals(2, files.size());
+                    assertTrue(
+                            files.stream()
+                                    .allMatch(f -> f.getStatus() == FileStatus.ACTIVE)
+                    );
+                })
+                .verifyComplete();
+    }
+
+    @Test
+    void givenFilesForDownload_whenStorageGetFile_thenResource() {
+        // given
+        FileEntity file = TestData.fileWithStatusActive();
+
+        when(fileRepository.findById(file.getId()))
+                .thenReturn(Mono.just(file));
+
+        Resource resource = new ByteArrayResource("test-content".getBytes());
+        when(fileStorage.getFile(file.getLocation()))
+                .thenReturn(Mono.just(resource));
+
+        // when
+        Mono<Resource> result = fileService.downloadFile(file.getId());
+
+        // then
+        StepVerifier.create(result)
+                .expectNextMatches(res -> resource.equals(resource))
+                .verifyComplete();
     }
 }
