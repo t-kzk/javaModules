@@ -20,7 +20,7 @@ import reactor.core.publisher.Mono;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class FileServiceImpl implements FileService{
+public class FileServiceImpl implements FileService {
 
     private final FileRepository filesRepository;
     private final EventService eventServiceImpl;
@@ -35,16 +35,20 @@ public class FileServiceImpl implements FileService{
         String filename = file.filename();
         String path = String.join("/", userId.toString(), filename);
 
-        return reactiveTx.transactional(fileStorage.uploadFile(file, path)
-                .then(filesRepository.save(FileEntity.builder()
-                                .name(filename)
-                                .location(path)
-                                .status(FileStatus.ACTIVE)
-                                .build())
-                        .flatMap(savedFile ->
-                                eventServiceImpl.createEvent(userId, savedFile.getId(), EventStatus.CREATED)
-                                        .thenReturn(savedFile))
-                )).onErrorResume(e -> fileStorage.deleteFile(path).then(Mono.error(e)));
+        return fileStorage.uploadFile(file, path)
+                .then(reactiveTx.transactional(filesRepository.save(FileEntity.builder()
+                                        .name(filename)
+                                        .location(path)
+                                        .status(FileStatus.ACTIVE)
+                                        .build())
+                                .flatMap(savedFile ->
+                                        eventServiceImpl.createEvent(
+                                                        userId, savedFile.getId(),
+                                                        EventStatus.CREATED)
+                                                .thenReturn(savedFile))
+                        ).onErrorResume(e -> fileStorage.deleteFile(path).then(Mono.error(e)))
+                );
+
     }
 
     @Override
