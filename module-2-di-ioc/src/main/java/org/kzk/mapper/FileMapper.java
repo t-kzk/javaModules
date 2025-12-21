@@ -1,4 +1,4 @@
-package org.kzk.dto.mapper;
+package org.kzk.mapper;
 
 import org.kzk.data.entity.FileEntity;
 import org.kzk.dto.FileInfoDto;

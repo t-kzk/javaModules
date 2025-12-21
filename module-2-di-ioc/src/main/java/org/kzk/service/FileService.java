@@ -25,4 +25,6 @@ public interface FileService {
     Flux<FileEntity> findAllByUserId(Integer userId);
 
     Mono<Resource> downloadFile(Integer fileId);
+
+    Mono<FileEntity> getFileById(Integer fileId);
 }

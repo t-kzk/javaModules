@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.kzk.data.entity.UserRole;
 import org.kzk.dto.FileInfoDto;
-import org.kzk.dto.mapper.FileMapper;
+import org.kzk.mapper.FileMapper;
 import org.kzk.security.CustomPrincipal;
 import org.kzk.service.FileService;
 import org.springframework.core.io.Resource;

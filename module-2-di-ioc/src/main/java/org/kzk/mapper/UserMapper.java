@@ -1,4 +1,4 @@
-package org.kzk.dto.mapper;
+package org.kzk.mapper;
 
 import org.kzk.data.entity.UserEntity;
 import org.kzk.dto.UserDto;

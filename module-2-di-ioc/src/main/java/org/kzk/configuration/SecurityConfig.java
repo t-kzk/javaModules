@@ -37,7 +37,6 @@ public class SecurityConfig {
                 .securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
-                        // .pathMatchers("/api/v1/auth/**").permitAll()
                         .pathMatchers(publicRoutes).permitAll()
                         .anyExchange().authenticated()
                 )
@@ -70,6 +69,7 @@ public class SecurityConfig {
         bearerAuthFilter.setRequiresAuthenticationMatcher(
                 ServerWebExchangeMatchers.pathMatchers(
                         "/api/v1/file/**",
+                        "/api/v1/event/**",
                         "/api/v1/auth/info")
         );
 

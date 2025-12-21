@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.kzk.dto.AuthRequestDto;
 import org.kzk.dto.AuthResponseDto;
 import org.kzk.dto.UserDto;
-import org.kzk.dto.mapper.UserMapper;
+import org.kzk.mapper.UserMapper;
 import org.kzk.security.CustomPrincipal;
 import org.kzk.security.SecurityService;
 import org.kzk.service.UserService;

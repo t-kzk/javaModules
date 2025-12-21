@@ -110,5 +110,10 @@ public class FileServiceImpl implements FileService {
         )));
     }
 
+    @Override
+    public Mono<FileEntity> getFileById(Integer fileId) {
+        return filesRepository.findById(fileId);
+    }
+
 
 }
