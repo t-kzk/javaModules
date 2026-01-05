@@ -1,18 +1,20 @@
-package org.kzk.integration;
+package org.kzk.integration.demo;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.DynamicPropertyRegistrar;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
+//TODO Я так и не понимаю, почему этот вариант так плох?
+// Чем концептуально отличается от враппера?
 @TestConfiguration
-@Testcontainers
+//@Testcontainers
 public class TestConfig {
 
-    @Bean
+    @Bean()
     @ServiceConnection
+  //  @Scope("prototype")
     public MySQLContainer<?> mysql() {
         return new MySQLContainer<>("mysql:8.0.43")
                 .withDatabaseName("module_2_di_ioc")
@@ -21,22 +23,23 @@ public class TestConfig {
     }
 
     @Bean
+   // @Scope("prototype")
     public DynamicPropertyRegistrar mysqlProperties(MySQLContainer<?> container) {
-        return registry -> {
+        return r -> {
             // Flyway
-            registry.add("spring.flyway.url", container::getJdbcUrl);
-            registry.add("spring.flyway.username", container::getUsername);
-            registry.add("spring.flyway.password", container::getPassword);
+            r.add("spring.flyway.url", container::getJdbcUrl);
+            r.add("spring.flyway.username", container::getUsername);
+            r.add("spring.flyway.password", container::getPassword);
 
             // R2DBC
-            registry.add("spring.r2dbc.url", () ->
+            r.add("spring.r2dbc.url", () ->
                     "r2dbc:mysql://" +
                             container.getHost() + ":" +
                             container.getMappedPort(3306) + "/" +
                             container.getDatabaseName()
             );
-            registry.add("spring.r2dbc.username", container::getUsername);
-            registry.add("spring.r2dbc.password", container::getPassword);
+            r.add("spring.r2dbc.username", container::getUsername);
+            r.add("spring.r2dbc.password", container::getPassword);
         };
     }
 }

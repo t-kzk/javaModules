@@ -1,4 +1,4 @@
-package org.kzk.integration;
+package org.kzk.integration.demo;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,7 +12,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 @ActiveProfiles("local")
-@SpringBootTest(classes = TestConfig.class,
+@SpringBootTest(
+        classes = TestConfig.class,
 
         webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerV1Test {

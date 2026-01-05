@@ -20,6 +20,12 @@ repositories {
 	mavenCentral()
 }
 
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.boot:spring-boot-dependencies:3.5.7"
+	}
+}
+
 dependencies {
 	// REACTIVE STACK
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
@@ -53,7 +59,10 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testImplementation 'io.projectreactor:reactor-test'
 	testImplementation 'org.testcontainers:r2dbc'
-
+// faker https://stackoverflow.com/questions/65775918/snakeyaml-1-27-android-jar-not-found-error-while-running-tests
+/*	testImplementation('com.github.javafaker:javafaker:1.0.2')
+	testImplementation group: 'org.yaml', name: 'snakeyaml', version: '2.4'*/
+	testImplementation 'net.datafaker:datafaker:1.6.0'
 }
 
 tasks.named('test') {
