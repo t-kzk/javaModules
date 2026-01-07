@@ -4,7 +4,7 @@ import org.testcontainers.containers.MySQLContainer;
 
 public class MySqlTestContainer {
 
-    public static final MySQLContainer<?> selfMySQLContainer;
+    protected static final MySQLContainer<?> selfMySQLContainer;
 
     static {
         selfMySQLContainer =

@@ -1,18 +1,16 @@
 package org.kzk.integration.configuration.env;
 
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.utility.DockerImageName;
+import org.testcontainers.containers.MinIOContainer;
 
 public class MinIoTestContainer {
 
-    public static final GenericContainer minIo;
+    protected static final MinIOContainer minio;
 
     static {
-        minIo = new GenericContainer<>(
-                DockerImageName.parse("quay.io/minio/minio:latest"))
-                       // .withExposedPorts()
-                .withEnv("MINIO_ROOT_USER", "minioadmin")
-                .withEnv("MINIO_ROOT_PASSWORD", "minioadmin")
-                .withCommand("server /data --console-address \":9001\"");
+        minio = new MinIOContainer("minio/minio:RELEASE.2025-09-07T16-13-09Z")
+                .withUserName("minioadmin")
+                .withPassword("minioadmin")
+                .withExposedPorts(9000, 9001);
+             //   .withCommand("server /data --console-address \":9001\"");
     }
 }
