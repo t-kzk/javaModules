@@ -1,12 +1,18 @@
-FROM eclipse-temurin:21.0.3_9-jdk-jammy as build
+FROM gradle:8.14.3-jdk21 AS build
 
-ARG JAR_FILE=module-2-di-ioc-0.0.1.jar
+WORKDIR /home/gradle/project
+
+COPY build.gradle .
+COPY gradle.properties .
+COPY src ./src
+
+RUN gradle --no-daemon clean bootJar
+
+FROM eclipse-temurin:21.0.3_9-jdk-jammy
 
 WORKDIR /app
-
-COPY build/libs/${JAR_FILE} application.jar
+COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
 
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=docker", "-jar", "application.jar"]
-
+ENTRYPOINT ["java", "-jar", "app.jar"]
