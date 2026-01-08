@@ -4,16 +4,16 @@ spring:
 
   flyway:
     baseline-on-migrate: true
-    user: root
-    password: secret
+    user: ${DB_USER}
+    password: ${DB_PASSWORD}
     create-schemas: true
     schemas: module_2_di_ioc
-#    url: jdbc:mysql://localhost:3306/module_2_di_ioc
+    url: ${DB_JDBC_URL}
 
   r2dbc:
-#    url: r2dbc:pool:mysql://localhost:3306/module_2_di_ioc
-    username: root
-    password: secret
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+    url: ${DB_R2DBC_URL}
 
   servlet:
     multipart:
@@ -30,51 +30,20 @@ logging:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.oauth2: DEBUG
-#    org.springframework.boot.autoconfigure: DEBUG
     org.springframework.http.codec: DEBUG
 
 minio:
-#  url: http://localhost:9000
-  access-key: minioadmin
-  secret-key: minioadmin
-  bucket: di-ioc
+  url: ${MINIO_URL}
+  access-key: ${MINIO_ACCESS_KEY}
+  secret-key: ${MINIO_SECRET_KEY}
+  bucket: ${MINIO_BUCKET}
 
 jwt:
   password:
     encoder:
-      secret: secret
+      secret: ${JWT_PASSWORD_ENCODER_SECRET:defaultSecretForLocal}
       iteration: 64
       keylength: 254
-  secret: eFJi8wm1GqZwZyHas6mD3bzlA3Yb36V0EkLz358fWAs=
-  experation: 3600
-  issuer: kzk
-
----
-spring:
-  config:
-    activate:
-      on-profile: 'local'
-
-  flyway:
-    url: jdbc:mysql://localhost:3306/module_2_di_ioc
-
-  r2dbc:
-    url: r2dbc:pool:mysql://localhost:3306/module_2_di_ioc
-
-minio:
-  url: http://localhost:9000
-
----
-spring:
-  config:
-    activate:
-      on-profile: 'docker'
-
-  flyway:
-    url: jdbc:mysql://mysql:3306/
-
-  r2dbc:
-    url: r2dbc:pool:mysql://mysql:3306/module_2_di_ioc
-
-minio:
-  url: http://minio:9000
+  secret: ${JWT_SECRET}
+  experation: ${JWT_EXPIRATION}
+  issuer: ${JWT_ISSUER}

@@ -12,6 +12,8 @@ public final class Containers {
     private Containers() {}
 
     public static void runContainers() {
+        TestEnvLoader.init();
+
         if (!mysql.isRunning()) {
             mysql.start();
         }
