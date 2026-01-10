@@ -38,6 +38,12 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.OPTIONS).permitAll()
                         .pathMatchers(publicRoutes).permitAll()
+                        .pathMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/webjars/**"
+                        ).permitAll()
                         .anyExchange().authenticated()
                 )
                 .exceptionHandling(spec -> spec.authenticationEntryPoint(

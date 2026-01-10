@@ -47,6 +47,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation"io.jsonwebtoken:jjwt:$jwtVersion"
 
+	// Swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
+
 	// MinIO
 	implementation "io.minio:minio:$minioVersion"
 

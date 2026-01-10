@@ -15,3 +15,7 @@
 Run configuration → Modify options → Environment variables → Load from file → .env
 
 добавить файл module-2-di-ioc/src/main/resources/application.env
+
+
+
+swagger http://localhost:8080/webjars/swagger-ui/index.html#/
