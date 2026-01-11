@@ -8,7 +8,7 @@ COPY src ./src
 
 RUN gradle --no-daemon clean bootJar
 
-FROM eclipse-temurin:21.0.3_9-jdk-jammy
+FROM eclipse-temurin:21-jre
 
 WORKDIR /app
 COPY --from=build /home/gradle/project/build/libs/*.jar app.jar
