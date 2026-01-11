@@ -1,21 +1,34 @@
-перед запуском контейнеров необходимо пересобрать. 
+# Учебный проект (хранение и изменение файлов)
 
-запуск локально
-Прописать run конфигурацию для сервиса - Active profiles local
-
-Для этого зайти в меню Run -> Edit Configurations -> выбрать main класс -> указать Active profiles: local
-[Инструкция](https://stackoverflow.com/questions/39738901/how-do-i-activate-a-spring-boot-profile-when-running-from-intellij).
+**Стек**: Java 21, Spring Boot 3.5, WebFlux, Spring Security (JWT), MapStruct, Lombok, Springdoc OpenAPI, MinIO, Testcontainers, Docker Compose, MySQL.
 
 
+---
+## Локальный запуск 
+> Требуется: **Docker** (compose), **JDK 21**. Порты по умолчанию: 8080 (сервис), 3306 (Mysql), 9000 (Minio).
 
-
-для запуска локально необходимо
 В IntelliJ:
 
-Run configuration → Modify options → Environment variables → Load from file → .env
+Run configuration → Modify options → Environment variables → Load from file → [application.env](src/main/resources/application.env)
 
-добавить файл module-2-di-ioc/src/main/resources/application.env
+Запустить сервис через сконфигурированный main 
 
+## Локальный запуск тестов 
+из корня подмудоля module-2-di-ioc
 
+   ```bash
+   gradle clean test
+   ```
 
-swagger http://localhost:8080/webjars/swagger-ui/index.html#/
+## Запуск через docker compose 
+
+   ```bash
+   docker compose down
+   ```
+
+   ```bash
+   docker compose up -d
+   ```
+
+## Swagger 
+http://localhost:8080/webjars/swagger-ui/index.html

@@ -71,5 +71,14 @@ tasks.named('test') {
 }
 
 test {
+	doFirst {
+		file("${rootProject.projectDir}/module-2-di-ioc/test.env")
+				.readLines()
+				.findAll { it && !it.startsWith("#") }
+				.each {
+					def (k, v) = it.split("=", 2)
+					environment k.trim(), v.trim()
+				}
+	}
     jvmArgs "-javaagent:${configurations.testRuntimeClasspath.find { it.name.contains('byte-buddy-agent') }}"
 }
